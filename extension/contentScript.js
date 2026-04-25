@@ -6,6 +6,7 @@
   let activeComposer = null;
   let generatedReply = "";
   let truthReply = "";
+  let lastComposerText = "";
   let config = {
     apiBaseUrl: "http://localhost:8080",
     shadowUserEnabled: false,
@@ -30,6 +31,21 @@
   }
 
   function bindUiEvents() {
+    // Keep platform composer focused when clicking panel controls.
+    const focusSafeButtons = [
+      ui.generateBtn,
+      ui.insertBtn,
+      ui.predictBtn,
+      ui.truthBtn,
+      ui.replyLaterBtn,
+      ui.refreshScheduledBtn
+    ];
+    for (const button of focusSafeButtons) {
+      button.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+      });
+    }
+
     ui.launcher.addEventListener("click", () => {
       ui.container.classList.toggle("hidden");
       if (!ui.container.classList.contains("hidden")) {
@@ -83,7 +99,7 @@
     });
 
     ui.predictBtn.addEventListener("click", async () => {
-      const text = getComposerText();
+      const text = getComposerText() || lastComposerText;
       if (!text) {
         ui.statusEl.textContent = "Could not detect text in the active reply box.";
         return;
@@ -155,6 +171,7 @@
       if (!composer) return;
 
       activeComposer = composer;
+      lastComposerText = readComposerText(activeComposer);
       if (!config.shadowUserEnabled) return;
 
       const typedText = readComposerText(activeComposer);
@@ -210,10 +227,15 @@
 
   function getComposerText() {
     const composer = findLikelyComposer();
-    if (!composer) return "";
+    if (!composer) return lastComposerText;
 
     activeComposer = composer;
-    return readComposerText(composer);
+    const text = readComposerText(composer);
+    if (text) {
+      lastComposerText = text;
+      return text;
+    }
+    return lastComposerText;
   }
 
   function readComposerText(composer) {
