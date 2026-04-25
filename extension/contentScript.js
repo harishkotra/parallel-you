@@ -83,9 +83,9 @@
     });
 
     ui.predictBtn.addEventListener("click", async () => {
-      const text = getComposerText() || truthReply || generatedReply;
+      const text = getComposerText();
       if (!text) {
-        ui.statusEl.textContent = "Nothing to analyze.";
+        ui.statusEl.textContent = "Could not detect text in the active reply box.";
         return;
       }
 
@@ -151,12 +151,13 @@
     });
 
     document.addEventListener("input", (event) => {
-      if (!config.shadowUserEnabled) return;
       const composer = resolveComposerFromNode(event.target);
       if (!composer) return;
 
       activeComposer = composer;
-      const typedText = getComposerText();
+      if (!config.shadowUserEnabled) return;
+
+      const typedText = readComposerText(activeComposer);
       if (!typedText || typedText.trim().length < 6) return;
 
       clearTimeout(observeTimer);
@@ -208,13 +209,24 @@
   }
 
   function getComposerText() {
-    activeComposer = findLikelyComposer();
-    if (!activeComposer) return "";
+    const composer = findLikelyComposer();
+    if (!composer) return "";
 
-    if (activeComposer.tagName === "TEXTAREA") {
-      return activeComposer.value || "";
+    activeComposer = composer;
+    return readComposerText(composer);
+  }
+
+  function readComposerText(composer) {
+    if (!composer) return "";
+
+    let text = "";
+    if (composer.tagName === "TEXTAREA") {
+      text = composer.value || "";
+    } else {
+      text = composer.innerText || composer.textContent || "";
     }
-    return activeComposer.innerText || "";
+
+    return text.replace(/\u200B/g, "").replace(/\s+/g, " ").trim();
   }
 
   function setComposerText(text) {
@@ -247,12 +259,16 @@
       if (selectionComposer) return selectionComposer;
     }
 
-    return (
-      document.querySelector('div[role="textbox"][contenteditable="true"][data-testid="tweetTextarea_0"]') ||
-      document.querySelector('div[role="textbox"][contenteditable="true"]') ||
-      document.querySelector("textarea") ||
-      null
-    );
+    const candidates = [
+      ...Array.from(document.querySelectorAll('div[role="textbox"][contenteditable="true"][data-testid="tweetTextarea_0"]')),
+      ...Array.from(document.querySelectorAll('div[role="textbox"][contenteditable="true"]')),
+      ...Array.from(document.querySelectorAll("textarea"))
+    ];
+
+    if (candidates.length === 0) return null;
+
+    const withText = candidates.find((el) => readComposerText(el).length > 0);
+    return withText || candidates[0];
   }
 
   function resolveComposerFromNode(node) {
