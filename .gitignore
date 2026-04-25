@@ -1,0 +1,52 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs and debug output
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node dependencies
+node_modules/
+**/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Build/cache/temp
+coverage/
+.nyc_output/
+.tmp/
+tmp/
+.cache/
+
+# Local packaging artifacts (keep server/public/parallel-you-extension.zip tracked)
+/parallel-you-extension-store.zip
+
+# Runtime/service-account leftovers
+*.pid
+*.seed
+
+# Python artifacts (if scripts are added later)
+__pycache__/
+*.pyc
+
+# Archive clutter
+*.tar
+*.gz
+*.tgz
+*.bz2
+*.7z

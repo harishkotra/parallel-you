@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Parallel You",
+  "version": "1.0.0",
+  "description": "AI behavioral layer for social platforms.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://www.linkedin.com/*",
+    "https://www.reddit.com/*",
+    "https://parallel-you-backend-330015043682.us-central1.run.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*",
+        "https://www.linkedin.com/*",
+        "https://www.reddit.com/*"
+      ],
+      "css": ["styles.css"],
+      "js": ["injectedUI.js", "contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

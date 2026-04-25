@@ -1,0 +1,18 @@
+{
+  "name": "parallel-you-server",
+  "version": "1.0.0",
+  "description": "Parallel You backend for Cloud Run",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}

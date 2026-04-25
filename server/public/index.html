@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Parallel You</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="hero">
+        <h1>Parallel You</h1>
+        <p>AI personas for social replies, now usable with or without the extension.</p>
+      </header>
+
+      <section class="card">
+        <h2>Use The AI Layer</h2>
+        <label for="postContent">Post or context</label>
+        <textarea id="postContent" rows="5" placeholder="Paste a tweet, post, or discussion context..."></textarea>
+
+        <div class="row">
+          <label for="persona">Persona</label>
+          <select id="persona">
+            <option value="professional">Professional</option>
+            <option value="unhinged">Unhinged</option>
+            <option value="analytical">Analytical</option>
+          </select>
+          <button id="generateBtn">Generate Reply</button>
+        </div>
+
+        <label for="draftText">Draft text</label>
+        <textarea id="draftText" rows="4" placeholder="Write your draft for prediction/truth mode..."></textarea>
+
+        <div class="row split">
+          <button id="predictBtn">Predict</button>
+          <button id="truthBtn">Truth Mode</button>
+          <button id="replyLaterBtn">Reply Later</button>
+        </div>
+
+        <div class="result">
+          <h3>Generated Reply</h3>
+          <pre id="generatedReply">No reply yet.</pre>
+        </div>
+
+        <div class="result">
+          <h3>Prediction</h3>
+          <pre id="prediction">No prediction yet.</pre>
+        </div>
+
+        <div class="result">
+          <h3>Truth Mode</h3>
+          <pre id="truth">No truth rewrite yet.</pre>
+        </div>
+
+        <div class="result">
+          <h3>Reply Later</h3>
+          <pre id="scheduled">No scheduled replies yet.</pre>
+        </div>
+
+        <p id="status" class="status">Ready.</p>
+      </section>
+
+      <section class="card">
+        <h2>Chrome Extension</h2>
+        <p>Install options:</p>
+        <div class="actions">
+          <a class="button" href="/parallel-you-extension.zip">Download Extension (.zip)</a>
+          <a class="button secondary" id="webStoreBtn" href="#" target="_blank" rel="noreferrer noopener">Install From Chrome Web Store</a>
+        </div>
+        <ol>
+          <li>Download and extract the zip.</li>
+          <li>Open <code>chrome://extensions</code>.</li>
+          <li>Enable Developer mode.</li>
+          <li>Click Load unpacked and select the extracted folder.</li>
+        </ol>
+        <p class="note" id="installNote">
+          If your browser or org policy blocks Developer Mode installs, use Chrome Web Store distribution.
+        </p>
+      </section>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
