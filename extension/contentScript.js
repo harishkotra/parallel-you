@@ -162,8 +162,20 @@
       const composer = resolveComposerFromNode(event.target);
       if (composer) {
         activeComposer = composer;
+        lastComposerText = readComposerText(composer) || lastComposerText;
         ui.statusEl.textContent = "Reply input detected.";
       }
+    });
+
+    document.addEventListener("selectionchange", () => {
+      if (platform !== "linkedin") return;
+      const selection = document.getSelection?.();
+      if (!selection?.anchorNode) return;
+      const composer = resolveComposerFromNode(selection.anchorNode);
+      if (!composer) return;
+      activeComposer = composer;
+      const text = readComposerText(composer);
+      if (text) lastComposerText = text;
     });
 
     document.addEventListener("input", (event) => {
@@ -268,24 +280,40 @@
   }
 
   function findLikelyComposer() {
-    if (activeComposer && document.contains(activeComposer)) {
+    if (isUsableComposer(activeComposer)) {
       return activeComposer;
     }
 
     const focusedComposer = resolveComposerFromNode(document.activeElement);
-    if (focusedComposer) return focusedComposer;
+    if (isUsableComposer(focusedComposer)) return focusedComposer;
 
     const selection = document.getSelection?.();
     if (selection?.anchorNode) {
       const selectionComposer = resolveComposerFromNode(selection.anchorNode);
-      if (selectionComposer) return selectionComposer;
+      if (isUsableComposer(selectionComposer)) return selectionComposer;
+    }
+
+    if (platform === "linkedin") {
+      const linkedInCandidates = [
+        ...Array.from(document.querySelectorAll(".comments-comment-box__editor[contenteditable='true']")),
+        ...Array.from(document.querySelectorAll(".ql-editor[contenteditable='true']")),
+        ...Array.from(document.querySelectorAll("[data-placeholder*='Add a comment'][contenteditable='true']")),
+        ...Array.from(document.querySelectorAll("div.editor-content[contenteditable='true']")),
+        ...Array.from(document.querySelectorAll("div[contenteditable='true']"))
+      ].filter(isUsableComposer);
+
+      if (linkedInCandidates.length > 0) {
+        const withText = linkedInCandidates.find((el) => readComposerText(el).length > 0);
+        return withText || linkedInCandidates[0];
+      }
     }
 
     const candidates = [
       ...Array.from(document.querySelectorAll('div[role="textbox"][contenteditable="true"][data-testid="tweetTextarea_0"]')),
       ...Array.from(document.querySelectorAll('div[role="textbox"][contenteditable="true"]')),
-      ...Array.from(document.querySelectorAll("textarea"))
-    ];
+      ...Array.from(document.querySelectorAll("textarea")),
+      ...Array.from(document.querySelectorAll("[contenteditable='true']"))
+    ].filter(isUsableComposer);
 
     if (candidates.length === 0) return null;
 
@@ -301,6 +329,7 @@
           ? node.parentElement
           : null;
     if (!element) return null;
+    if (element.closest(".parallel-you-panel")) return null;
 
     if (isComposerElement(element)) return element;
 
@@ -310,10 +339,18 @@
 
   function isComposerElement(element) {
     if (!element || !(element instanceof HTMLElement)) return false;
+    if (element.closest(".parallel-you-panel")) return false;
 
     if (element.tagName === "TEXTAREA") return true;
     if (element.getAttribute("contenteditable") === "true") return true;
     return element.getAttribute("role") === "textbox";
+  }
+
+  function isUsableComposer(element) {
+    if (!element || !document.contains(element)) return false;
+    if (!isComposerElement(element)) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
   }
 
   function extractInteractionText(startElement) {
