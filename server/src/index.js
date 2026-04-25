@@ -33,6 +33,10 @@ app.get("/app-config", (req, res) => {
   });
 });
 
+app.get("/privacy", (req, res) => {
+  return res.sendFile(path.join(publicDir, "privacy.html"));
+});
+
 app.use(observeRouter);
 app.use(generateReplyRouter);
 app.use(predictRouter);
@@ -40,7 +44,7 @@ app.use(truthRouter);
 app.use(scheduleReplyRouter);
 
 app.get("*", (req, res, next) => {
-  if (req.path.startsWith("/observe") || req.path.startsWith("/generate-reply") || req.path.startsWith("/predict") || req.path.startsWith("/truth") || req.path.startsWith("/schedule-reply") || req.path.startsWith("/scheduled-replies") || req.path.startsWith("/health") || req.path.startsWith("/app-config")) {
+  if (req.path.startsWith("/observe") || req.path.startsWith("/generate-reply") || req.path.startsWith("/predict") || req.path.startsWith("/truth") || req.path.startsWith("/schedule-reply") || req.path.startsWith("/scheduled-replies") || req.path.startsWith("/health") || req.path.startsWith("/app-config") || req.path.startsWith("/privacy")) {
     return next();
   }
   return res.sendFile(path.join(publicDir, "index.html"));
