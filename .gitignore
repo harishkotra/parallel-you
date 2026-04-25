@@ -35,6 +35,8 @@ tmp/
 
 # Local packaging artifacts (keep server/public/parallel-you-extension.zip tracked)
 /parallel-you-extension-store.zip
+/RELEASE_PROCESS.md
+/scripts/prepare-webstore-release.sh
 
 # Runtime/service-account leftovers
 *.pid

@@ -192,3 +192,10 @@ Supported paths are:
 - Replace `setTimeout` async jobs with Cloud Tasks + Pub/Sub.
 - Add auth and per-user memory segmentation.
 - Add platform-specific adapters for robust composer detection.
+
+## Extension Release Workflow
+
+- Update `extension/manifest.json` version.
+- Update `CHANGELOG.md` for that exact version.
+- Run: `./scripts/prepare-webstore-release.sh`
+- Upload: `parallel-you-extension-store.zip` to Chrome Web Store.
