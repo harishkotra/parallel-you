@@ -5,6 +5,9 @@ Parallel You is a behavioral AI layer for social platforms, built as:
 - A Chrome Extension (Manifest v3) that overlays persona-driven AI assistance on X/Twitter, LinkedIn, and Reddit.
 - A Cloud Run-ready Node.js app that now also serves a standalone frontend at `/` for users without the extension.
 
+<img width="1591" height="1162" alt="Screenshot at Apr 25 19-20-12" src="https://github.com/user-attachments/assets/0d82bc5f-3837-4f19-be21-7a2c914328e8" />
+
+
 ## Production URL
 
 - Live app: `https://parallel-you-backend-330015043682.us-central1.run.app`
