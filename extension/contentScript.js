@@ -83,7 +83,7 @@
     });
 
     ui.predictBtn.addEventListener("click", async () => {
-      const text = getComposerText();
+      const text = getComposerText() || truthReply || generatedReply;
       if (!text) {
         ui.statusEl.textContent = "Nothing to analyze.";
         return;
@@ -143,19 +143,19 @@
 
   function bindPageEvents() {
     document.addEventListener("focusin", (event) => {
-      const target = event.target;
-      if (isComposerElement(target)) {
-        activeComposer = target;
+      const composer = resolveComposerFromNode(event.target);
+      if (composer) {
+        activeComposer = composer;
         ui.statusEl.textContent = "Reply input detected.";
       }
     });
 
     document.addEventListener("input", (event) => {
       if (!config.shadowUserEnabled) return;
-      const target = event.target;
-      if (!isComposerElement(target)) return;
+      const composer = resolveComposerFromNode(event.target);
+      if (!composer) return;
 
-      activeComposer = target;
+      activeComposer = composer;
       const typedText = getComposerText();
       if (!typedText || typedText.trim().length < 6) return;
 
@@ -208,9 +208,7 @@
   }
 
   function getComposerText() {
-    if (!activeComposer || !document.contains(activeComposer)) {
-      activeComposer = findLikelyComposer();
-    }
+    activeComposer = findLikelyComposer();
     if (!activeComposer) return "";
 
     if (activeComposer.tagName === "TEXTAREA") {
@@ -220,9 +218,7 @@
   }
 
   function setComposerText(text) {
-    if (!activeComposer || !document.contains(activeComposer)) {
-      activeComposer = findLikelyComposer();
-    }
+    activeComposer = findLikelyComposer();
     if (!activeComposer) return;
 
     if (activeComposer.tagName === "TEXTAREA") {
@@ -238,11 +234,40 @@
   }
 
   function findLikelyComposer() {
+    if (activeComposer && document.contains(activeComposer)) {
+      return activeComposer;
+    }
+
+    const focusedComposer = resolveComposerFromNode(document.activeElement);
+    if (focusedComposer) return focusedComposer;
+
+    const selection = document.getSelection?.();
+    if (selection?.anchorNode) {
+      const selectionComposer = resolveComposerFromNode(selection.anchorNode);
+      if (selectionComposer) return selectionComposer;
+    }
+
     return (
+      document.querySelector('div[role="textbox"][contenteditable="true"][data-testid="tweetTextarea_0"]') ||
       document.querySelector('div[role="textbox"][contenteditable="true"]') ||
       document.querySelector("textarea") ||
       null
     );
+  }
+
+  function resolveComposerFromNode(node) {
+    const element =
+      node instanceof HTMLElement
+        ? node
+        : node instanceof Node
+          ? node.parentElement
+          : null;
+    if (!element) return null;
+
+    if (isComposerElement(element)) return element;
+
+    const closest = element.closest('textarea, div[role="textbox"], [contenteditable="true"]');
+    return closest instanceof HTMLElement ? closest : null;
   }
 
   function isComposerElement(element) {
